@@ -21,6 +21,6 @@ jobs:
         with:
           bun-version: latest
 
-      - run: bun install
+      - run: rm -rf ~/.bun/install/cache && bun install
       - run: bun build --target=bun cli.ts --outdir=./dist
       - run: bun cli.ts --help
