@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Build a Node.js Single Executable Application (SEA) with native modules.
 #
+# Strategy: node-gyp-build checks prebuilds/ next to process.execPath as a fallback.
+# So we extract the prebuilds alongside the binary at runtime via the SEA loader.
+#
 # Usage: ./scripts/build-sea.sh [output-name]
 # Output: ./dist/<output-name>
 
@@ -12,54 +15,49 @@ BUNDLE="$DIST_DIR/bundle.cjs"
 BLOB="$DIST_DIR/sea-prep.blob"
 BINARY="$DIST_DIR/$OUTPUT_NAME"
 
+PLATFORM="$(uname -s | tr '[:upper:]' '[:lower:]')"
+ARCH="$(uname -m)"
+case "$ARCH" in
+  x86_64|amd64) ARCH="x64" ;;
+  aarch64) ARCH="arm64" ;;
+esac
+
 mkdir -p "$DIST_DIR"
 
 echo "==> Step 1: Bundle TypeScript to single CJS file..."
-# Bundle everything — tree-sitter JS is included, only .node binaries are loaded at runtime via SEA assets
 npx esbuild cli.ts \
   --bundle \
   --platform=node \
   --target=node22 \
   --format=cjs \
-  --outfile="$BUNDLE" \
-  --loader:.node=file
+  --outfile="$BUNDLE"
 
-echo "==> Step 2: Collect native .node bindings..."
-# Find all tree-sitter prebuilt binaries for the current platform
-ASSETS_JSON="{"
-ASSET_REQUIRES=""
-ASSET_COUNT=0
+echo "==> Step 2: Collect native .node bindings for ${PLATFORM}-${ARCH}..."
+ASSETS_ARGS=""
 
 for mod in tree-sitter tree-sitter-c-sharp tree-sitter-cpp tree-sitter-go \
            tree-sitter-java tree-sitter-javascript tree-sitter-python \
            tree-sitter-rust tree-sitter-scala tree-sitter-typescript; do
-  # node-gyp-build puts prebuilds in prebuilds/<platform>-<arch>/
-  PREBUILD_DIR="node_modules/$mod/prebuilds"
-  BINDING_FILE=""
 
-  # Check for prebuild
+  BINDING_FILE=""
+  PREBUILD_DIR="node_modules/$mod/prebuilds/${PLATFORM}-${ARCH}"
+
   if [ -d "$PREBUILD_DIR" ]; then
     BINDING_FILE=$(find "$PREBUILD_DIR" -name "*.node" 2>/dev/null | head -1)
   fi
 
-  # Check for build/Release
   if [ -z "$BINDING_FILE" ] && [ -d "node_modules/$mod/build/Release" ]; then
     BINDING_FILE=$(find "node_modules/$mod/build/Release" -name "*.node" 2>/dev/null | head -1)
   fi
 
   if [ -n "$BINDING_FILE" ]; then
-    echo "   Found: $mod -> $BINDING_FILE"
-    if [ "$ASSET_COUNT" -gt 0 ]; then
-      ASSETS_JSON="$ASSETS_JSON,"
-    fi
-    ASSETS_JSON="$ASSETS_JSON \"${mod}.node\": \"$BINDING_FILE\""
-    ASSET_COUNT=$((ASSET_COUNT + 1))
+    ASSET_KEY="prebuilds/${PLATFORM}-${ARCH}/$(basename "$BINDING_FILE")"
+    echo "   Found: $mod -> $BINDING_FILE (asset: $ASSET_KEY)"
+    ASSETS_ARGS="$ASSETS_ARGS, \"$ASSET_KEY\": \"$BINDING_FILE\""
   else
-    echo "   Skipping: $mod (no native binding found)"
+    echo "   Skipping: $mod (no native binding for ${PLATFORM}-${ARCH})"
   fi
 done
-
-ASSETS_JSON="$ASSETS_JSON }"
 
 echo "==> Step 3: Generate SEA config..."
 cat > "$DIST_DIR/sea-config.json" <<EOF
@@ -68,7 +66,7 @@ cat > "$DIST_DIR/sea-config.json" <<EOF
   "output": "$BLOB",
   "disableExperimentalSEAWarning": true,
   "useCodeCache": true,
-  "assets": $ASSETS_JSON
+  "assets": { ${ASSETS_ARGS#,} }
 }
 EOF
 
