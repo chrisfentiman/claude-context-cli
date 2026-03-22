@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.5...claude-context-cli-v0.1.6) (2026-03-22)
+
+
+### Features
+
+* add config command to show resolved configuration ([ccc1f7d](https://github.com/chrisfentiman/claude-context-cli/commit/ccc1f7d9ea11fea2d5394016aa0e7e59ac6f6663))
+
 ## [0.1.5](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.4...claude-context-cli-v0.1.5) (2026-03-22)
 
 
