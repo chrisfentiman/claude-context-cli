@@ -31,6 +31,12 @@ for (var i = 0; i < keys.length; i++) {
 var bundlePath = path.join(tmpDir, 'bundle.js');
 fs.writeFileSync(bundlePath, sea.getAsset('bundle.js', 'utf-8'));
 
+// Write node-gyp-build so the bundle can require it
+var ngbDir = path.join(tmpDir, 'node_modules', 'node-gyp-build');
+fs.mkdirSync(ngbDir, { recursive: true });
+fs.writeFileSync(path.join(ngbDir, 'index.js'), sea.getAsset('node-gyp-build.js', 'utf-8'));
+fs.writeFileSync(path.join(ngbDir, 'package.json'), '{"name":"node-gyp-build","main":"index.js"}');
+
 // Debug: list what we extracted
 var prebuildsDir = path.join(tmpDir, 'prebuilds');
 if (fs.existsSync(prebuildsDir)) {

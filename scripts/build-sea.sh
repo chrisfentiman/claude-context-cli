@@ -33,6 +33,8 @@ echo "==> Step 1: Bundle TypeScript to single CJS file..."
 # Don't use --loader:.node=empty — node-gyp-build dynamically loads .node files
 # via require(resolvedPath) which goes through process.dlopen, not static imports.
 # esbuild will warn about .node files but they're never statically imported.
+# Externalize node-gyp-build so it uses real require() for .node files at runtime.
+# esbuild's __require shim can't load native .node binaries from disk.
 npx esbuild cli.ts \
   --bundle \
   --platform=node \
@@ -40,11 +42,12 @@ npx esbuild cli.ts \
   --format=cjs \
   --outfile="$BUNDLE" \
   --loader:.node=empty \
-  --define:process.versions.bun=undefined
+  --define:process.versions.bun=undefined \
+  --external:node-gyp-build
 
 echo "==> Step 2: Collect native .node bindings for ${PLATFORM}-${ARCH}..."
-# Start with the bundle itself as an asset
-ASSETS_JSON="\"bundle.js\": \"$BUNDLE\""
+# Start with the bundle and node-gyp-build as assets
+ASSETS_JSON="\"bundle.js\": \"$BUNDLE\", \"node-gyp-build.js\": \"node_modules/node-gyp-build/node-gyp-build.js\""
 
 for mod in tree-sitter tree-sitter-c-sharp tree-sitter-cpp tree-sitter-go \
            tree-sitter-java tree-sitter-javascript tree-sitter-python \
