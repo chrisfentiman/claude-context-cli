@@ -1,0 +1,20 @@
+{
+  "name": "claude-context-cli",
+  "version": "0.1.0",
+  "description": "Auto-indexing CLI for claude-context-mcp",
+  "module": "cli.ts",
+  "type": "module",
+  "bin": {
+    "claude-context-cli": "./cli.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@zilliz/claude-context-core": "^0.1.6",
+    "commander": "^14.0.3"
+  }
+}

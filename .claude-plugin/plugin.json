@@ -1,0 +1,8 @@
+{
+  "name": "claude-context-cli",
+  "description": "Auto-indexing for claude-context-mcp. Keeps your codebase index fresh on session start, after git operations, and on session end. Includes /insights skill for promoting memsearch patterns to auto-memory.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Chris Fentiman"
+  }
+}
