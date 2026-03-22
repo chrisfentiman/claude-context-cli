@@ -2,14 +2,26 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, feat/*]
   pull_request:
     branches: [main]
 
 jobs:
   build:
-    name: Build and test
-    runs-on: macos-latest
+    name: Build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            artifact: claude-context-cli-darwin-arm64
+          - os: macos-15-intel
+            artifact: claude-context-cli-darwin-x64
+          - os: ubuntu-latest
+            artifact: claude-context-cli-linux-x64
+          - os: ubuntu-24.04-arm
+            artifact: claude-context-cli-linux-arm64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
 
@@ -17,12 +29,10 @@ jobs:
         with:
           node-version: 22
 
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      # Use npm for install (handles node-gyp natively)
-      # Use bun for build/run (fast TypeScript execution)
       - run: npm install
-      - run: bun build --target=bun cli.ts --outdir=./dist
-      - run: bun cli.ts --help
+
+      - name: Build SEA binary
+        run: bash scripts/build-sea.sh ${{ matrix.artifact }}
+
+      - name: Verify binary runs
+        run: ./dist/${{ matrix.artifact }} --help
