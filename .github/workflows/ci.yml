@@ -1,15 +1,13 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
   build:
     name: Build and test
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
@@ -17,12 +15,6 @@ jobs:
         with:
           node-version: 22
 
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      # Use npm for install (handles node-gyp natively)
-      # Use bun for build/run (fast TypeScript execution)
       - run: npm install
-      - run: bun build --target=bun cli.ts --outdir=./dist
-      - run: bun cli.ts --help
+      - run: npm run build
+      - run: node dist/cli.js --help

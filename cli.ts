@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * claude-context-cli — Auto-indexing CLI for @zilliz/claude-context-mcp.
  *

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # PostToolUse hook for Bash: re-index after git pull/merge/checkout/rebase.
-# Tries: binary in PATH > bun with plugin source > skip
 
 set -euo pipefail
 
@@ -18,12 +17,11 @@ case "$CMD" in
     done
 
     CWD="${CLAUDE_PROJECT_DIR:-.}"
-    CLI_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
     if command -v claude-context-cli &>/dev/null; then
       claude-context-cli index --if-stale "$CWD" &>/dev/null &
-    elif command -v bun &>/dev/null && [ -f "$CLI_DIR/cli.ts" ]; then
-      bun "$CLI_DIR/cli.ts" index --if-stale "$CWD" &>/dev/null &
+    elif command -v npx &>/dev/null; then
+      npx claude-context-cli index --if-stale "$CWD" &>/dev/null &
     fi
     ;;
 esac

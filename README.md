@@ -31,46 +31,27 @@
 
 ## Install
 
-### One-liner
+### npm (recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/chrisfentiman/claude-context-cli/main/scripts/install.sh | bash
+npm install -g claude-context-cli
 ```
 
 ### Claude Code plugin
 
 ```bash
-# Add the marketplace
 /plugin marketplace add chrisfentiman/claudesplace
-
-# Install the plugin
 /plugin install claude-context-cli
 ```
-
-Or load directly for testing:
-
-```bash
-claude --plugin-dir /path/to/claude-context-cli
-```
-
-Plugin hooks use the binary if installed, or fall back to Bun.
 
 ### From source
 
 ```bash
 git clone https://github.com/chrisfentiman/claude-context-cli.git
 cd claude-context-cli
-bun install
+npm install
+npm run build
 ```
-
-### Supported platforms
-
-| OS | Architecture | Binary |
-|---|---|---|
-| macOS | Apple Silicon (arm64) | `claude-context-cli-darwin-arm64` |
-| macOS | Intel (x64) | `claude-context-cli-darwin-x64` |
-| Linux | x64 | `claude-context-cli-linux-x64` |
-| Linux | arm64 | `claude-context-cli-linux-arm64` |
 
 ## Usage
 

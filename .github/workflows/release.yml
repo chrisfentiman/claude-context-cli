@@ -32,26 +32,11 @@ jobs:
           GH_TOKEN: ${{ secrets.CLAUDE_CONTEXT_CLI_RELEASE_TOKEN }}
           GH_REPO: ${{ github.repository }}
 
-  build:
-    name: Build (${{ matrix.artifact }})
+  publish:
+    name: Publish to npm
     needs: release-please
     if: needs.release-please.outputs.release_created == 'true'
-    strategy:
-      matrix:
-        include:
-          - os: macos-latest
-            target: bun-darwin-arm64
-            artifact: claude-context-cli-darwin-arm64
-          - os: macos-15-intel
-            target: bun-darwin-x64
-            artifact: claude-context-cli-darwin-x64
-          - os: ubuntu-latest
-            target: bun-linux-x64
-            artifact: claude-context-cli-linux-x64
-          - os: ubuntu-24.04-arm
-            target: bun-linux-arm64
-            artifact: claude-context-cli-linux-arm64
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -60,41 +45,10 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+          registry-url: https://registry.npmjs.org
 
       - run: npm install
-
-      - name: Build binary
-        run: bun build cli.ts --compile --target=${{ matrix.target }} --outfile ${{ matrix.artifact }}
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: ${{ matrix.artifact }}
-          path: ${{ matrix.artifact }}
-
-  publish:
-    name: Upload binaries
-    needs: [release-please, build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          path: artifacts
-          merge-multiple: true
-
-      - name: Generate checksums
-        run: |
-          cd artifacts
-          sha256sum claude-context-cli-* > checksums.txt
-          cat checksums.txt
-
-      - name: Upload to release
+      - run: npm run build
+      - run: npm publish
         env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          chmod +x artifacts/claude-context-cli-*
-          gh release upload ${{ needs.release-please.outputs.tag_name }} artifacts/claude-context-cli-* artifacts/checksums.txt --clobber
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
