@@ -9,12 +9,12 @@ on:
 jobs:
   build:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - run: bun install --frozen-lockfile
+      - run: bun install
       - run: bun build --target=bun cli.ts --outdir=./dist
       - run: bun cli.ts --help

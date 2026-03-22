@@ -60,7 +60,7 @@ jobs:
         with:
           bun-version: latest
 
-      - run: bun install --frozen-lockfile
+      - run: bun install
 
       - name: Build binary
         run: bun build cli.ts --compile --target=${{ matrix.target }} --outfile ${{ matrix.artifact }}
