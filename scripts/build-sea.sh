@@ -30,13 +30,16 @@ esac
 mkdir -p "$DIST_DIR"
 
 echo "==> Step 1: Bundle TypeScript to single CJS file..."
+# Don't use --loader:.node=empty — node-gyp-build dynamically loads .node files
+# via require(resolvedPath) which goes through process.dlopen, not static imports.
+# esbuild will warn about .node files but they're never statically imported.
 npx esbuild cli.ts \
   --bundle \
   --platform=node \
   --target=node22 \
   --format=cjs \
   --outfile="$BUNDLE" \
-  --loader:.node=empty
+  --external:"*.node"
 
 echo "==> Step 2: Collect native .node bindings for ${PLATFORM}-${ARCH}..."
 # Start with the bundle itself as an asset
