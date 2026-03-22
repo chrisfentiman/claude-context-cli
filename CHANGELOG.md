@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.7...claude-context-cli-v0.1.8) (2026-03-22)
+
+
+### Features
+
+* switch to npm distribution, drop SEA binaries ([53d4661](https://github.com/chrisfentiman/claude-context-cli/commit/53d4661ec8a6fa1a100b67e36151da08b41930b2))
+
 ## [0.1.7](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.6...claude-context-cli-v0.1.7) (2026-03-22)
 
 
