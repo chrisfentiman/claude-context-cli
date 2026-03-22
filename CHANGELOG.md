@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.4...claude-context-cli-v0.1.5) (2026-03-22)
+
+
+### Bug Fixes
+
+* clear bun cache before install in CI ([fed778e](https://github.com/chrisfentiman/claude-context-cli/commit/fed778e612976833f82a5c51795ee507ab79511b))
+
 ## [0.1.4](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.3...claude-context-cli-v0.1.4) (2026-03-22)
 
 
