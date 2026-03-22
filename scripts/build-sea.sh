@@ -31,7 +31,8 @@ npx esbuild cli.ts \
   --target=node22 \
   --format=cjs \
   --outfile="$BUNDLE" \
-  --loader:.node=empty
+  --loader:.node=empty \
+  --external:node:sea
 
 echo "==> Step 2: Collect native .node bindings for ${PLATFORM}-${ARCH}..."
 ASSETS_ARGS=""
