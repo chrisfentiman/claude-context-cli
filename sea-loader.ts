@@ -3,7 +3,7 @@
  *
  * When running as a Node.js Single Executable Application, native .node
  * modules are embedded as assets. This loader extracts them to a temp
- * directory and patches require() to find them.
+ * directory so node-gyp-build can find them.
  *
  * When running normally (not SEA), this is a no-op.
  */
@@ -19,15 +19,17 @@ export function initSEALoader(): void {
   initialized = true
 
   // Check if we're running as a SEA
-  let sea: { getRawAsset: (key: string) => ArrayBuffer; getAssetKeys: () => string[] }
+  let isSea = false
   try {
-    sea = require("node:sea")
+    const sea = require("node:sea")
+    isSea = sea.isSea?.() ?? true
   } catch {
-    // Not a SEA build, nothing to do
-    return
+    return // Not a SEA build
   }
+  if (!isSea) return
 
-  const keys = sea.getAssetKeys()
+  const sea = require("node:sea")
+  const keys: string[] = sea.getAssetKeys()
   if (keys.length === 0) return
 
   // Extract native modules to temp dir
@@ -44,16 +46,26 @@ export function initSEALoader(): void {
     }
   }
 
-  // Patch Module._resolveFilename to check our extract dir for .node files
-  const Module = require("module")
-  const originalResolve = Module._resolveFilename
-  Module._resolveFilename = function (request: string, ...args: unknown[]) {
-    // If requesting a tree-sitter module, check our extract dir
-    const assetKey = `${request}.node`
-    const extractPath = join(extractDir, assetKey)
-    if (existsSync(extractPath)) {
-      return extractPath
+  // Patch process.dlopen to intercept native module loading
+  const origDlopen = process.dlopen
+  process.dlopen = function (module: any, filename: string, ...args: any[]) {
+    // If the filename doesn't exist but we have a matching asset, use that
+    if (!existsSync(filename)) {
+      const basename = require("path").basename(filename)
+      const assetPath = join(extractDir, basename)
+      if (existsSync(assetPath)) {
+        return origDlopen.call(this, module, assetPath, ...args)
+      }
+      // Also try matching by module name (tree-sitter-python.node etc)
+      for (const key of keys) {
+        if (key.endsWith(".node") && filename.includes(key.replace(".node", ""))) {
+          const keyPath = join(extractDir, key)
+          if (existsSync(keyPath)) {
+            return origDlopen.call(this, module, keyPath, ...args)
+          }
+        }
+      }
     }
-    return originalResolve.call(this, request, ...args)
+    return origDlopen.call(this, module, filename, ...args)
   }
 }

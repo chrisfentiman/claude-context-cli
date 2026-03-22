@@ -15,22 +15,14 @@ BINARY="$DIST_DIR/$OUTPUT_NAME"
 mkdir -p "$DIST_DIR"
 
 echo "==> Step 1: Bundle TypeScript to single CJS file..."
+# Bundle everything — tree-sitter JS is included, only .node binaries are loaded at runtime via SEA assets
 npx esbuild cli.ts \
   --bundle \
   --platform=node \
   --target=node22 \
   --format=cjs \
   --outfile="$BUNDLE" \
-  --external:tree-sitter \
-  --external:tree-sitter-c-sharp \
-  --external:tree-sitter-cpp \
-  --external:tree-sitter-go \
-  --external:tree-sitter-java \
-  --external:tree-sitter-javascript \
-  --external:tree-sitter-python \
-  --external:tree-sitter-rust \
-  --external:tree-sitter-scala \
-  --external:tree-sitter-typescript
+  --loader:.node=file
 
 echo "==> Step 2: Collect native .node bindings..."
 # Find all tree-sitter prebuilt binaries for the current platform
