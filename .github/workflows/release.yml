@@ -40,16 +40,12 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            target: bun-darwin-arm64
             artifact: claude-context-cli-darwin-arm64
           - os: macos-15-intel
-            target: bun-darwin-x64
             artifact: claude-context-cli-darwin-x64
           - os: ubuntu-latest
-            target: bun-linux-x64
             artifact: claude-context-cli-linux-x64
           - os: ubuntu-24.04-arm
-            target: bun-linux-arm64
             artifact: claude-context-cli-linux-arm64
     runs-on: ${{ matrix.os }}
     steps:
@@ -61,19 +57,15 @@ jobs:
         with:
           node-version: 22
 
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - run: npm install
 
-      - name: Build binary
-        run: bun build cli.ts --compile --target=${{ matrix.target }} --outfile ${{ matrix.artifact }}
+      - name: Build SEA binary
+        run: bash scripts/build-sea.sh ${{ matrix.artifact }}
 
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}
-          path: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}
 
   publish:
     name: Upload binaries

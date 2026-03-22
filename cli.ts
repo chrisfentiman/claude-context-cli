@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * claude-context-cli — Auto-indexing CLI for @zilliz/claude-context-mcp.
  *
@@ -6,6 +6,9 @@
  * and staleness checks. Designed to be called from Claude Code hooks
  * for automatic index maintenance.
  */
+
+import { initSEALoader } from "./sea-loader"
+initSEALoader() // Must be first — patches require() for native modules in SEA builds
 
 import { Command } from "commander"
 import { createContext, isStale, saveState, resolveConfig } from "./context"
