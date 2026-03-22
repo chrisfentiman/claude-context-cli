@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.3...claude-context-cli-v0.1.4) (2026-03-22)
+
+
+### Bug Fixes
+
+* add Node.js for node-gyp, bump actions/setup-node to v6 ([91c81ea](https://github.com/chrisfentiman/claude-context-cli/commit/91c81ea3513770f131477704e0713c36ba711a74))
+
 ## [0.1.3](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.2...claude-context-cli-v0.1.3) (2026-03-22)
 
 
