@@ -31,19 +31,18 @@ for (var i = 0; i < keys.length; i++) {
 var bundlePath = path.join(tmpDir, 'bundle.js');
 fs.writeFileSync(bundlePath, sea.getAsset('bundle.js', 'utf-8'));
 
-// Use Node's module system to load the bundle properly
-// This gives it a real filename, __dirname, and working require()
+// Debug: list what we extracted
+var prebuildsDir = path.join(tmpDir, 'prebuilds');
+if (fs.existsSync(prebuildsDir)) {
+  var platforms = fs.readdirSync(prebuildsDir);
+  for (var p = 0; p < platforms.length; p++) {
+    var files = fs.readdirSync(path.join(prebuildsDir, platforms[p]));
+    process.stderr.write('[sea-wrapper] prebuilds/' + platforms[p] + '/: ' + files.join(', ') + '\n');
+  }
+}
+
+// Load the bundle with Module._compile — gives it real __dirname and require()
 var m = new Module(bundlePath);
 m.filename = bundlePath;
 m.paths = Module._nodeModulePaths(path.dirname(bundlePath));
-
-// Patch require inside the bundle to resolve node-gyp-build against tmpDir
-var origResolveFilename = Module._resolveFilename;
-Module._resolveFilename = function(request, parent) {
-  // node-gyp-build passes __dirname to find prebuilds.
-  // Inside the bundle, __dirname is tmpDir. node-gyp-build will check
-  // tmpDir/prebuilds/ which is where we extracted them.
-  return origResolveFilename.apply(this, arguments);
-};
-
 m._compile(fs.readFileSync(bundlePath, 'utf-8'), bundlePath);
