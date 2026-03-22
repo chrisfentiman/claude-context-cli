@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.1...claude-context-cli-v0.1.2) (2026-03-22)
+
+
+### Bug Fixes
+
+* trust native postinstall scripts in CI ([880c5c0](https://github.com/chrisfentiman/claude-context-cli/commit/880c5c029756404f0bfcb6ed805ff68d4dda8106))
+* trust tree-sitter postinstall scripts via package.json ([03591ac](https://github.com/chrisfentiman/claude-context-cli/commit/03591ac3d5f1f36565d4b4aca8810e6f53d5bf82))
+
 ## [0.1.1](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.0...claude-context-cli-v0.1.1) (2026-03-22)
 
 
