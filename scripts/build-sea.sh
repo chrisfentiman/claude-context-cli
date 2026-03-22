@@ -39,7 +39,7 @@ npx esbuild cli.ts \
   --target=node22 \
   --format=cjs \
   --outfile="$BUNDLE" \
-  --external:"*.node"
+  --define:process.versions.bun=undefined
 
 echo "==> Step 2: Collect native .node bindings for ${PLATFORM}-${ARCH}..."
 # Start with the bundle itself as an asset
