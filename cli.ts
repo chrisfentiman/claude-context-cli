@@ -7,9 +7,6 @@
  * for automatic index maintenance.
  */
 
-import { initSEALoader } from "./sea-loader"
-initSEALoader() // Must be first — patches require() for native modules in SEA builds
-
 import { Command } from "commander"
 import { createContext, isStale, saveState, resolveConfig } from "./context"
 

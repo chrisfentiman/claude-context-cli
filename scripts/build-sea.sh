@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
 # Build a Node.js Single Executable Application (SEA) with native modules.
 #
-# Strategy: node-gyp-build checks prebuilds/ next to process.execPath as a fallback.
-# So we extract the prebuilds alongside the binary at runtime via the SEA loader.
+# Strategy:
+# 1. esbuild bundles the app into a single CJS file
+# 2. A wrapper script (sea-wrapper.js) is the SEA main entry point
+# 3. The wrapper extracts native .node prebuilds from SEA assets to disk
+# 4. Then loads and executes the bundled app via Module._compile
+# 5. node-gyp-build finds the extracted prebuilds next to process.execPath
 #
 # Usage: ./scripts/build-sea.sh [output-name]
 # Output: ./dist/<output-name>
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUTPUT_NAME="${1:-claude-context-cli}"
 DIST_DIR="./dist"
-BUNDLE="$DIST_DIR/bundle.cjs"
+BUNDLE="$DIST_DIR/bundle.js"
 BLOB="$DIST_DIR/sea-prep.blob"
 BINARY="$DIST_DIR/$OUTPUT_NAME"
 
@@ -31,11 +36,11 @@ npx esbuild cli.ts \
   --target=node22 \
   --format=cjs \
   --outfile="$BUNDLE" \
-  --loader:.node=empty \
-  --external:node:sea
+  --loader:.node=empty
 
 echo "==> Step 2: Collect native .node bindings for ${PLATFORM}-${ARCH}..."
-ASSETS_ARGS=""
+# Start with the bundle itself as an asset
+ASSETS_JSON="\"bundle.js\": \"$BUNDLE\""
 
 for mod in tree-sitter tree-sitter-c-sharp tree-sitter-cpp tree-sitter-go \
            tree-sitter-java tree-sitter-javascript tree-sitter-python \
@@ -55,20 +60,21 @@ for mod in tree-sitter tree-sitter-c-sharp tree-sitter-cpp tree-sitter-go \
   if [ -n "$BINDING_FILE" ]; then
     ASSET_KEY="prebuilds/${PLATFORM}-${ARCH}/$(basename "$BINDING_FILE")"
     echo "   Found: $mod -> $BINDING_FILE (asset: $ASSET_KEY)"
-    ASSETS_ARGS="$ASSETS_ARGS, \"$ASSET_KEY\": \"$BINDING_FILE\""
+    ASSETS_JSON="$ASSETS_JSON, \"$ASSET_KEY\": \"$BINDING_FILE\""
   else
     echo "   Skipping: $mod (no native binding for ${PLATFORM}-${ARCH})"
   fi
 done
 
 echo "==> Step 3: Generate SEA config..."
+# The wrapper is the main entry point — it extracts assets then loads the bundle
 cat > "$DIST_DIR/sea-config.json" <<EOF
 {
-  "main": "$BUNDLE",
+  "main": "$SCRIPT_DIR/sea-wrapper.js",
   "output": "$BLOB",
   "disableExperimentalSEAWarning": true,
   "useCodeCache": true,
-  "assets": { ${ASSETS_ARGS#,} }
+  "assets": { $ASSETS_JSON }
 }
 EOF
 
