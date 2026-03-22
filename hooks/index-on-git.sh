@@ -18,8 +18,8 @@ case "$CMD" in
 
     CWD="${CLAUDE_PROJECT_DIR:-.}"
 
-    if command -v claude-context-cli &>/dev/null; then
-      claude-context-cli index --if-stale "$CWD" &>/dev/null &
+    if command -v ctx &>/dev/null; then
+      ctx index --if-stale "$CWD" &>/dev/null &
     elif command -v npx &>/dev/null; then
       npx claude-context-cli index --if-stale "$CWD" &>/dev/null &
     fi

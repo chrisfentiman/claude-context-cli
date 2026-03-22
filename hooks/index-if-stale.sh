@@ -10,8 +10,8 @@ done
 
 CWD="${CLAUDE_PROJECT_DIR:-.}"
 
-if command -v claude-context-cli &>/dev/null; then
-  claude-context-cli index --if-stale "$CWD" 2>/dev/null || true
+if command -v ctx &>/dev/null; then
+  ctx index --if-stale "$CWD" 2>/dev/null || true
 elif command -v npx &>/dev/null; then
   npx claude-context-cli index --if-stale "$CWD" 2>/dev/null || true
 fi
