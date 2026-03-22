@@ -16,6 +16,19 @@
       },
     },
   },
+  "trustedDependencies": [
+    "tree-sitter-java",
+    "tree-sitter-scala",
+    "tree-sitter-typescript",
+    "tree-sitter-c-sharp",
+    "faiss-node",
+    "tree-sitter-python",
+    "protobufjs",
+    "tree-sitter-cpp",
+    "tree-sitter-go",
+    "tree-sitter-javascript",
+    "tree-sitter-rust",
+  ],
   "packages": {
     "@cfworker/json-schema": ["@cfworker/json-schema@4.1.1", "", {}, "sha512-gAmrUZSGtKc3AiBL71iNWxDsyUC5uMaKKGdvzYsBoTW/xi42JQHl7eKV2OYzCUqvc+D2RCcf7EXY2iCyFIk6og=="],
 

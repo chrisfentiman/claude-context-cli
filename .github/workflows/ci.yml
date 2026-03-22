@@ -15,6 +15,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - run: bun install --frozen-lockfile --trust
+      - run: bun install --frozen-lockfile
       - run: bun build --target=bun cli.ts --outdir=./dist
       - run: bun cli.ts --help

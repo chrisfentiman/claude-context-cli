@@ -16,5 +16,18 @@
   "dependencies": {
     "@zilliz/claude-context-core": "^0.1.6",
     "commander": "^14.0.3"
-  }
+  },
+  "trustedDependencies": [
+    "tree-sitter-c-sharp",
+    "tree-sitter-cpp",
+    "tree-sitter-go",
+    "tree-sitter-java",
+    "tree-sitter-javascript",
+    "tree-sitter-python",
+    "tree-sitter-rust",
+    "tree-sitter-scala",
+    "tree-sitter-typescript",
+    "faiss-node",
+    "protobufjs"
+  ]
 }
