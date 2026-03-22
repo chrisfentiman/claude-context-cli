@@ -22,8 +22,10 @@ export function initSEALoader(): void {
     sea = require("node:sea")
     if (sea.isSea && !sea.isSea()) return
   } catch {
-    return
+    return // Not a SEA build
   }
+
+  console.error("[sea-loader] Running as SEA, extracting native modules...")
 
   let keys: string[]
   try {
@@ -35,6 +37,7 @@ export function initSEALoader(): void {
 
   // Extract prebuilds next to the binary so node-gyp-build finds them
   const execDir = dirname(process.execPath)
+  console.error(`[sea-loader] execDir: ${execDir}, assets: ${keys.join(", ")}`)
 
   for (const key of keys) {
     if (!key.endsWith(".node")) continue
