@@ -12,9 +12,15 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+
       - run: bun install
       - run: bun build --target=bun cli.ts --outdir=./dist
       - run: bun cli.ts --help
