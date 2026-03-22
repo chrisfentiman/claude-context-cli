@@ -21,7 +21,7 @@ case "$CMD" in
     if command -v ctx &>/dev/null; then
       ctx index --if-stale "$CWD" &>/dev/null &
     elif command -v npx &>/dev/null; then
-      npx claude-context-cli index --if-stale "$CWD" &>/dev/null &
+      npx -y claude-context-cli index --if-stale "$CWD" &>/dev/null &
     fi
     ;;
 esac
