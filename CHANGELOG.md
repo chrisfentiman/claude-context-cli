@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.6...claude-context-cli-v0.1.7) (2026-03-22)
+
+
+### Features
+
+* add workflow_dispatch trigger for manual releases ([33cc7bc](https://github.com/chrisfentiman/claude-context-cli/commit/33cc7bc5a9d81c89688e3b649da28fc1f56cbcb0))
+
 ## [0.1.6](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.5...claude-context-cli-v0.1.6) (2026-03-22)
 
 
