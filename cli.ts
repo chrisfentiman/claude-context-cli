@@ -8,13 +8,17 @@
  */
 
 import { execSync } from "child_process"
+import { join } from "path"
+import { readFileSync } from "fs"
 import { Command } from "commander"
 import { createContext, isStale, saveState, resolveConfig, readState } from "./context"
 
+const pkg = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf-8"))
+
 const program = new Command()
-  .name("claude-context-cli")
+  .name("ctx")
   .description("Auto-indexing CLI for claude-context-mcp")
-  .version("0.1.0")
+  .version(pkg.version)
 
 // --- index ---
 program
