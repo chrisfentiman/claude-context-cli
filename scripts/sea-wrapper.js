@@ -1,6 +1,7 @@
 // SEA wrapper — runs BEFORE the main bundle.
-// Extracts native .node prebuilds from SEA assets to disk,
-// then loads the bundled application.
+// 1. Extracts native .node prebuilds from SEA assets to disk
+// 2. Writes the JS bundle to a temp file
+// 3. Requires it — giving it a real filesystem context for require() resolution
 
 'use strict';
 
@@ -9,38 +10,34 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-// Extract all .node assets to a predictable location
 const keys = sea.getAssetKeys();
-const execDir = path.dirname(process.execPath);
+const tmpDir = path.join(os.tmpdir(), 'claude-context-cli');
+fs.mkdirSync(tmpDir, { recursive: true });
 
+// Extract native .node prebuilds to tmpDir so node-gyp-build finds them
 for (const key of keys) {
-  if (key === 'bundle.js') continue; // skip the app bundle
+  if (key === 'bundle.js') continue;
   if (!key.endsWith('.node')) continue;
 
-  const extractPath = path.join(execDir, key);
+  const extractPath = path.join(tmpDir, key);
   if (!fs.existsSync(extractPath)) {
-    const dir = path.dirname(extractPath);
-    fs.mkdirSync(dir, { recursive: true });
-    try {
-      fs.writeFileSync(extractPath, new Uint8Array(sea.getRawAsset(key)));
-    } catch (e) {
-      // execDir might be read-only, fall back to tmpdir
-      const tmpPath = path.join(os.tmpdir(), 'claude-context-cli', key);
-      fs.mkdirSync(path.dirname(tmpPath), { recursive: true });
-      fs.writeFileSync(tmpPath, new Uint8Array(sea.getRawAsset(key)));
-      // Create symlink so node-gyp-build finds it
-      try {
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
-        fs.copyFileSync(tmpPath, extractPath);
-      } catch (e2) { /* best effort */ }
-    }
+    fs.mkdirSync(path.dirname(extractPath), { recursive: true });
+    fs.writeFileSync(extractPath, new Uint8Array(sea.getRawAsset(key)));
   }
 }
 
-// Now load the actual application bundle from assets
+// Write bundle to tmpDir so it has a real filesystem path
+const bundlePath = path.join(tmpDir, 'bundle.js');
 const bundleSource = sea.getAsset('bundle.js', 'utf-8');
-const Module = require('module');
-const m = new Module('claude-context-cli');
-m._compile(bundleSource, path.join(execDir, 'bundle.js'));
+fs.writeFileSync(bundlePath, bundleSource);
+
+// Set process.execPath dirname to tmpDir so node-gyp-build's
+// resolve(path.dirname(process.execPath)) fallback finds our prebuilds
+const origExecPath = process.execPath;
+Object.defineProperty(process, 'execPath', {
+  get() { return path.join(tmpDir, path.basename(origExecPath)); },
+  configurable: true
+});
+
+// Now require the bundle — it has a real __dirname and require() works
+require(bundlePath);
