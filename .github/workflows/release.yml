@@ -2,14 +2,38 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      pr: ${{ steps.release.outputs.pr }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: node
+          token: ${{ secrets.CLAUDE_CONTEXT_CLI_RELEASE_TOKEN }}
+
+      - name: Enable auto-merge
+        if: steps.release.outputs.pr
+        run: gh pr merge --squash --auto ${{ fromJSON(steps.release.outputs.pr).number }}
+        env:
+          GH_TOKEN: ${{ secrets.CLAUDE_CONTEXT_CLI_RELEASE_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+
   build:
+    name: Build (${{ matrix.artifact }})
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
     strategy:
       matrix:
         include:
@@ -25,20 +49,19 @@ jobs:
           - os: ubuntu-24.04-arm
             target: bun-linux-arm64
             artifact: claude-context-cli-linux-arm64
-
     runs-on: ${{ matrix.os }}
-
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
 
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+      - run: bun install --frozen-lockfile
 
-      - name: Build standalone binary
+      - name: Build binary
         run: bun build cli.ts --compile --target=${{ matrix.target }} --outfile ${{ matrix.artifact }}
 
       - uses: actions/upload-artifact@v4
@@ -46,8 +69,9 @@ jobs:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}
 
-  release:
-    needs: build
+  publish:
+    name: Upload binaries
+    needs: [release-please, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -61,14 +85,10 @@ jobs:
           sha256sum claude-context-cli-* > checksums.txt
           cat checksums.txt
 
-      - name: Create release
+      - name: Upload to release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           chmod +x artifacts/claude-context-cli-*
-          gh release create ${{ github.ref_name }} \
-            --title "claude-context-cli ${{ github.ref_name }}" \
-            --generate-notes \
-            artifacts/claude-context-cli-* \
-            artifacts/checksums.txt
+          gh release upload ${{ needs.release-please.outputs.tag_name }} artifacts/claude-context-cli-* artifacts/checksums.txt --clobber
