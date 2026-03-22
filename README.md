@@ -49,8 +49,8 @@ This installs both `claude-context-cli` and the shorter `ctx` alias.
 ### From source
 
 ```bash
-git clone https://github.com/chrisfentiman/ctx.git
-cd ctx
+git clone https://github.com/chrisfentiman/claude-context-cli.git
+cd claude-context-cli
 npm install
 npm run build
 ```
