@@ -4,7 +4,8 @@
   "description": "Auto-indexing CLI for claude-context-mcp",
   "main": "dist/cli.js",
   "bin": {
-    "claude-context-cli": "dist/cli.js"
+    "claude-context-cli": "dist/cli.js",
+    "ctx": "dist/cli.js"
   },
   "files": [
     "dist",
