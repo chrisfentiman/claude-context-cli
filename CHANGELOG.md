@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.10](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.9...claude-context-cli-v0.1.10) (2026-03-22)
+
+
+### Bug Fixes
+
+* read version from package.json, rename command to ctx ([#14](https://github.com/chrisfentiman/claude-context-cli/issues/14)) ([c92db9b](https://github.com/chrisfentiman/claude-context-cli/commit/c92db9bda591f4b8775588e09f1ed64f07f97058))
+
 ## [0.1.9](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.8...claude-context-cli-v0.1.9) (2026-03-22)
 
 
