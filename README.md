@@ -1,6 +1,8 @@
 # claude-context-cli (`ctx`)
 
+[![npm](https://img.shields.io/npm/v/claude-context-cli?style=flat-square)](https://www.npmjs.com/package/claude-context-cli)
 [![License](https://img.shields.io/github/license/chrisfentiman/claude-context-cli?style=flat-square)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/chrisfentiman/claude-context-cli/ci.yml?style=flat-square)](https://github.com/chrisfentiman/claude-context-cli/actions)
 
 > Auto-indexing CLI and Claude Code plugin for [@zilliz/claude-context-mcp](https://github.com/zilliztech/claude-context). Keeps your codebase index fresh automatically.
 
