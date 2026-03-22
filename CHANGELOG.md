@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.11](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.10...claude-context-cli-v0.1.11) (2026-03-22)
+
+
+### Bug Fixes
+
+* use ctx alias in hooks, add npx -y flag ([#16](https://github.com/chrisfentiman/claude-context-cli/issues/16)) ([7084e2a](https://github.com/chrisfentiman/claude-context-cli/commit/7084e2a2e160eabeff06254b7cafed4c1bc48dfc))
+
 ## [0.1.10](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.9...claude-context-cli-v0.1.10) (2026-03-22)
 
 
