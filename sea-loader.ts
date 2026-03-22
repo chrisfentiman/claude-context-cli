@@ -41,15 +41,16 @@ export function initSEALoader(): void {
 
     const extractPath = join(execDir, key)
     if (!existsSync(extractPath)) {
+      const data = sea.getRawAsset(key)
+      const bytes = new Uint8Array(data)
       try {
         mkdirSync(dirname(extractPath), { recursive: true })
-        const data = sea.getRawAsset(key)
-        writeFileSync(extractPath, new Uint8Array(data))
+        writeFileSync(extractPath, bytes)
       } catch {
         // Can't write next to binary (read-only fs), try temp dir
         const tmpPath = join(require("os").tmpdir(), "claude-context-cli", key)
         mkdirSync(dirname(tmpPath), { recursive: true })
-        writeFileSync(tmpPath, new Uint8Array(data))
+        writeFileSync(tmpPath, bytes)
       }
     }
   }
