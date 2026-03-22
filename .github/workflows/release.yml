@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release-please:
@@ -47,8 +48,7 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
 
+      - run: npm install -g npm@latest
       - run: npm install
       - run: npm run build
       - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
