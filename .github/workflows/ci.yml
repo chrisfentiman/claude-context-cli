@@ -21,6 +21,8 @@ jobs:
         with:
           bun-version: latest
 
-      - run: rm -rf ~/.bun/install/cache && bun install
+      # Use npm for install (handles node-gyp natively)
+      # Use bun for build/run (fast TypeScript execution)
+      - run: npm install
       - run: bun build --target=bun cli.ts --outdir=./dist
       - run: bun cli.ts --help

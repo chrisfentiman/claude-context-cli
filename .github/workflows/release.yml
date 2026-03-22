@@ -64,7 +64,7 @@ jobs:
         with:
           bun-version: latest
 
-      - run: rm -rf ~/.bun/install/cache && bun install
+      - run: npm install
 
       - name: Build binary
         run: bun build cli.ts --compile --target=${{ matrix.target }} --outfile ${{ matrix.artifact }}
