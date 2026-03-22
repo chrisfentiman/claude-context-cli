@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.8...claude-context-cli-v0.1.9) (2026-03-22)
+
+
+### Features
+
+* add info command, fix README for npm distribution ([#12](https://github.com/chrisfentiman/claude-context-cli/issues/12)) ([a9d3e22](https://github.com/chrisfentiman/claude-context-cli/commit/a9d3e22fa697c83dc7770ec4456952d04cec4d1e))
+
 ## [0.1.8](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.7...claude-context-cli-v0.1.8) (2026-03-22)
 
 
