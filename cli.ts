@@ -7,8 +7,9 @@
  * for automatic index maintenance.
  */
 
+import { execSync } from "child_process"
 import { Command } from "commander"
-import { createContext, isStale, saveState, resolveConfig } from "./context"
+import { createContext, isStale, saveState, resolveConfig, readState } from "./context"
 
 const program = new Command()
   .name("claude-context-cli")
@@ -126,6 +127,68 @@ program
   .action(async (path: string) => {
     const config = resolveConfig(path)
     console.log(JSON.stringify(config, null, 2))
+  })
+
+// --- info ---
+program
+  .command("info")
+  .description("Show index info: collection stats, file count, last indexed, staleness")
+  .argument("[path]", "Path to codebase", process.cwd())
+  .action(async (path: string) => {
+    const ctx = await createContext(path)
+    const config = resolveConfig(path)
+    const stale = await isStale(path)
+    const hasIdx = ctx ? await ctx.hasIndex(path) : false
+    const collectionName = ctx ? ctx.getCollectionName(path) : "unknown"
+
+    // Get collection stats from Milvus API
+    let rowCount = 0
+    let collectionExists = false
+    const milvusHost = config.milvusAddress.split(":")[0] || "127.0.0.1"
+    const milvusPort = config.milvusAddress.split(":")[1] || "19530"
+    try {
+      const statsRes = execSync(
+        `curl -sf http://${milvusHost}:${milvusPort}/v2/vectordb/collections/get_stats -X POST -H "Content-Type: application/json" -d '{"collectionName":"${collectionName}"}'`,
+        { encoding: "utf-8", timeout: 5000 }
+      )
+      const stats = JSON.parse(statsRes)
+      if (stats.code === 0) {
+        collectionExists = true
+        rowCount = parseInt(stats.data?.rowCount || "0", 10)
+      }
+    } catch {}
+
+    // Read last index state
+    const state = readState(path)
+
+    const lastIndexed = state.timestamp
+      ? new Date(state.timestamp).toISOString()
+      : "never"
+
+    console.log(
+      JSON.stringify(
+        {
+          path,
+          indexed: hasIdx,
+          stale,
+          collection: collectionName,
+          collectionExists,
+          chunks: rowCount,
+          lastIndexed,
+          lastCommitAt: state.commit
+            ? new Date(state.commit * 1000).toISOString()
+            : "unknown",
+          dirtyFiles: state.dirtyCount,
+          embedding: {
+            provider: config.embeddingProvider,
+            model: config.embeddingModel,
+          },
+          milvus: config.milvusAddress,
+        },
+        null,
+        2
+      )
+    )
   })
 
 program.parse()

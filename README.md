@@ -1,4 +1,4 @@
-# claude-context-cli
+# claude-context-cli (`ctx`)
 
 [![License](https://img.shields.io/github/license/chrisfentiman/claude-context-cli?style=flat-square)](LICENSE)
 
@@ -27,7 +27,7 @@
 - Config resolution matching claude-context-mcp (walks `.mcp.json` > `~/.claude.json` > `~/.context/.env`)
 - Standalone CLI for manual indexing and search
 - Claude Code plugin with async hooks
-- Pre-built binaries for macOS and Linux (arm64 + x64)
+- Distributed via npm with native module support
 
 ## Install
 
@@ -36,6 +36,8 @@
 ```bash
 npm install -g claude-context-cli
 ```
+
+This installs both `claude-context-cli` and the shorter `ctx` alias.
 
 ### Claude Code plugin
 
@@ -47,8 +49,8 @@ npm install -g claude-context-cli
 ### From source
 
 ```bash
-git clone https://github.com/chrisfentiman/claude-context-cli.git
-cd claude-context-cli
+git clone https://github.com/chrisfentiman/ctx.git
+cd ctx
 npm install
 npm run build
 ```
@@ -57,26 +59,26 @@ npm run build
 
 ```bash
 # Index a codebase (incremental)
-claude-context-cli index [path]
+ctx index [path]
 
 # Index only if stale (new commits or dirty files changed)
-claude-context-cli index --if-stale [path]
+ctx index --if-stale [path]
 
 # Force full re-index
-claude-context-cli index --force [path]
+ctx index --force [path]
 
 # Check index status
-claude-context-cli status [path]
+ctx status [path]
 
 # Semantic search
-claude-context-cli search "authentication middleware" [path]
-claude-context-cli search "database connection" -n 5 [path]
+ctx search "authentication middleware" [path]
+ctx search "database connection" -n 5 [path]
 
 # Clear index
-claude-context-cli clear [path]
+ctx clear [path]
 ```
 
-If running from source, prefix with `bun cli.ts` instead of `claude-context-cli`.
+If running from source, use `npx ts-node cli.ts` or `node dist/cli.js` after `npm run build`.
 
 ## Configuration
 

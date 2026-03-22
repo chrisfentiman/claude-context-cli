@@ -137,7 +137,7 @@ function getStateFile(cwd: string): string {
   return join(cwd, ".claude", "context", "last-index.json")
 }
 
-function loadState(cwd: string): IndexState {
+export function readState(cwd: string): IndexState {
   try {
     const file = getStateFile(cwd)
     if (existsSync(file)) {
@@ -176,7 +176,7 @@ export function saveState(cwd: string): void {
 }
 
 export async function isStale(cwd: string): Promise<boolean> {
-  const state = loadState(cwd)
+  const state = readState(cwd)
   if (state.timestamp === 0) return true
 
   let latestCommit = 0
