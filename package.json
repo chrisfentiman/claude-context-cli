@@ -1,6 +1,6 @@
 {
   "name": "claude-context-cli",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Auto-indexing CLI for claude-context-mcp",
   "module": "cli.ts",
   "type": "module",
