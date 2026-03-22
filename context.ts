@@ -106,7 +106,7 @@ function resolveVar(
   return undefined
 }
 
-function resolveConfig(cwd: string): ResolvedConfig {
+export function resolveConfig(cwd: string): ResolvedConfig {
   // Build source chain (project-level first, then user-level, then global)
   const sources: Record<string, string>[] = [
     extractMcpEnv(join(cwd, ".mcp.json")),

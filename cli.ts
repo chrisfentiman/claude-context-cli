@@ -8,7 +8,7 @@
  */
 
 import { Command } from "commander"
-import { createContext, isStale, saveState } from "./context"
+import { createContext, isStale, saveState, resolveConfig } from "./context"
 
 const program = new Command()
   .name("claude-context-cli")
@@ -116,6 +116,16 @@ program
 
     await ctx.clearIndex(path)
     console.error(`[claude-context-cli] Cleared index for ${path}`)
+  })
+
+// --- config ---
+program
+  .command("config")
+  .description("Show resolved configuration (walks .mcp.json > ~/.claude.json > ~/.context/.env)")
+  .argument("[path]", "Path to codebase", process.cwd())
+  .action(async (path: string) => {
+    const config = resolveConfig(path)
+    console.log(JSON.stringify(config, null, 2))
   })
 
 program.parse()
