@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.2...claude-context-cli-v0.1.3) (2026-03-22)
+
+
+### Bug Fixes
+
+* use macos runner for CI, drop frozen-lockfile for native deps ([916a60b](https://github.com/chrisfentiman/claude-context-cli/commit/916a60b89d5f95ab77ca8ec31ffe7897f71df635))
+
 ## [0.1.2](https://github.com/chrisfentiman/claude-context-cli/compare/claude-context-cli-v0.1.1...claude-context-cli-v0.1.2) (2026-03-22)
 
 
