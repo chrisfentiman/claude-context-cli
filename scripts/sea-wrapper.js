@@ -47,8 +47,6 @@ if (fs.existsSync(prebuildsDir)) {
   }
 }
 
-// Load the bundle with Module._compile — gives it real __dirname and require()
-var m = new Module(bundlePath);
-m.filename = bundlePath;
-m.paths = Module._nodeModulePaths(path.dirname(bundlePath));
-m._compile(fs.readFileSync(bundlePath, 'utf-8'), bundlePath);
+// Load the bundle via Module._load which sets up require() properly
+// _load creates the module, sets filename/paths, compiles, and caches it
+Module._load(bundlePath, null, true);
